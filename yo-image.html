@@ -1,0 +1,36 @@
+<link rel="import" href="../polymer/polymer-element.html">
+
+<dom-module id="yo-image">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <h2>Hello [[prop1]]!</h2>
+  </template>
+
+  <script>
+    /**
+     * `yo-image`
+     * A image input with upalod and crop
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class YoImage extends Polymer.Element {
+      static get is() { return 'yo-image'; }
+      static get properties() {
+        return {
+          prop1: {
+            type: String,
+            value: 'yo-image'
+          }
+        };
+      }
+    }
+
+    window.customElements.define(YoImage.is, YoImage);
+  </script>
+</dom-module>
