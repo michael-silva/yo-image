@@ -1,9 +1,15 @@
 {
   "name": "yo-image",
+  "version": "0.0.1",
   "description": "A image input with upalod and crop",
   "main": "yo-image.html",
+  "license": "MIT",
   "dependencies": {
-    "polymer": "Polymer/polymer#^2.0.0"
+    "polymer": "Polymer/polymer#^2.0.0",
+    "iron-image": "^2.1.2",
+    "paper-button": "^2.0.0",
+    "yo-file-uploader": "michael-silva/yo-file-uploader#^0.0.2",
+    "yo-paper-cropper": "michael-silva/yo-paper-cropper#^0.0.2"
   },
   "devDependencies": {
     "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^2.0.0",

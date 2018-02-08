@@ -1,36 +1,82 @@
 <link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../paper-button/paper-button.html">
+<link rel="import" href="../yo-paper-cropper/yo-paper-cropper.html">
+<link rel="import" href="../yo-file-uploader/yo-file-uploader.html">
 
 <dom-module id="yo-image">
-  <template>
-    <style>
-      :host {
-        display: block;
-      }
-    </style>
-    <h2>Hello [[prop1]]!</h2>
-  </template>
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
 
-  <script>
-    /**
-     * `yo-image`
-     * A image input with upalod and crop
-     *
-     * @customElement
-     * @polymer
-     * @demo demo/index.html
-     */
-    class YoImage extends Polymer.Element {
-      static get is() { return 'yo-image'; }
-      static get properties() {
-        return {
-          prop1: {
-            type: String,
-            value: 'yo-image'
-          }
-        };
-      }
-    }
+            #cropper,
+            #uploader {
+                display: block;
+                max-height: 300px;
 
-    window.customElements.define(YoImage.is, YoImage);
-  </script>
+            }
+
+            #cropper.hidden,
+            #uploader.hidden {
+                display: none;
+            }
+        </style>
+        <yo-paper-cropper id="cropper" class="hidden" on-crop="saveImage"></yo-paper-cropper>
+        <yo-file-uploader id="uploader" on-change="uploadFiles" hide-droparea></yo-file-uploader>
+        <paper-button raised on-click="_cropImage">Crop Image</paper-button>
+    </template>
+
+    <script>
+        /**
+         * `yo-image`
+         * A image input with upalod and crop
+         *
+         * @customElement
+         * @polymer
+         * @demo demo/index.html
+         */
+        class YoImage extends Polymer.Element {
+            static get is() { return 'yo-image'; }
+            static get properties() {
+                return {
+                    src: {
+                        type: String
+                    },
+                    uploaderLabel: {
+                        type: String,
+                        observer: '_uploaderLabelChanged'
+                    },
+                };
+            }
+
+            connectedCallback() {
+                super.connectedCallback();
+
+            }
+
+            uploadFiles(e) {
+                var file = e.detail.files[0];
+                //this.$.uploader.classList.add('hidden');
+                this.$.cropper.classList.remove('hidden');
+                this.$.cropper.src = URL.createObjectURL(file);
+            }
+
+            _changeImage() {
+                this.$.uploader.click();
+            }
+
+            _cropImage() {
+                this.$.cropper.classList.add('hidden');
+                this.$.image.src = this.$.cropper._cropper.getCroppedCanvas().toDataURL();
+                //this.$.uploader.classList.remove('hidden');
+            }
+
+            saveImage() {
+
+            }
+        }
+
+        window.customElements.define(YoImage.is, YoImage);
+    </script>
 </dom-module>
