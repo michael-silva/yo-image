@@ -114,10 +114,9 @@
                 return Object.assign(options, this._getCropperOptions);
             }
 
-            _updateOptions() {
+            _updatePreviewSize() {
                 if (this._isImgLoaded(this.targetElem)) {
                     this._setPreviewSize();
-                    this.$.cropper.options = this._getCropperOptions();
                 }
                 else {
                     this.targetElem.addEventListener('load', this._setPreviewSize.bind(this));
@@ -127,13 +126,13 @@
             _targetChanged() {
                 this.targetElem = (typeof (this.target) === "string") ? document.querySelector(this.target) : this.target;
                 if (!this.targetElem) console.error(`It's required a target element`);
-                this._updateOptions();
+                this._updatePreviewSize();
             }
 
             _previewChanged() {
                 this.previewElem = (typeof (this.preview) === "string") ? document.querySelector(this.preview) : this.preview;
                 if (!this.targetElem) return;
-                this._updateOptions();
+                this._updatePreviewSize();
             }
 
             _setPreviewSize() {
