@@ -1,7 +1,7 @@
 {
   "name": "yo-image",
-  "version": "0.0.1",
-  "description": "A image input with uplaod and crop",
+  "version": "0.0.2",
+  "description": "A image input with upload and crop",
   "main": "yo-image.html",
   "license": "MIT",
   "dependencies": {
