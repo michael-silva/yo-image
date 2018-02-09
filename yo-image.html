@@ -1,5 +1,4 @@
 <link rel="import" href="../polymer/polymer-element.html">
-<link rel="import" href="../paper-button/paper-button.html">
 <link rel="import" href="../yo-paper-cropper/yo-paper-cropper.html">
 <link rel="import" href="../yo-file-uploader/yo-file-uploader.html">
 
@@ -10,11 +9,16 @@
                 display: block;
             }
 
-            #cropper,
+            #cropper {
+                display: block;
+                width: 100%;
+                --yo-paper-cropper-height: var(--yo-image-height, 300px);
+            }
+
             #uploader {
                 display: block;
-                max-height: 300px;
-
+                width: 100%;
+                margin: auto;
             }
 
             #cropper.hidden,
@@ -22,15 +26,15 @@
                 display: none;
             }
         </style>
-        <yo-paper-cropper id="cropper" class="hidden" on-crop="saveImage"></yo-paper-cropper>
-        <yo-file-uploader id="uploader" on-change="uploadFiles" hide-droparea></yo-file-uploader>
-        <paper-button raised on-click="_cropImage">Crop Image</paper-button>
+        <yo-paper-cropper id="cropper" class="hidden" on-image-loaded="_setCurrentOptions" on-cropper-ready="_hackToPreview"></yo-paper-cropper>
+        <yo-file-uploader id="uploader" on-change="_uploadFiles" hide-droparea></yo-file-uploader>
+        <slot></slot>
     </template>
 
     <script>
         /**
          * `yo-image`
-         * A image input with upalod and crop
+         * A image input with uplaod and crop
          *
          * @customElement
          * @polymer
@@ -47,33 +51,144 @@
                         type: String,
                         observer: '_uploaderLabelChanged'
                     },
+                    target: {
+                        type: Element | String,
+                        observer: '_targetChanged'
+                    },
+                    preview: {
+                        type: Element | String,
+                        observer: '_previewChanged'
+                    },
+                    cropperOptions: {
+                        type: Object,
+                        value: {}
+                    }
+                };
+            }
+
+            /**
+            * I dont know why but the preview only works with this hack
+            **/
+            _hackToPreview() {
+                if (!this.previewElem) return;
+                const img = this.previewElem.childNodes[0];
+
+                img.style.removeProperty('min-width');
+                img.style.removeProperty('min-height');
+                img.style.removeProperty('max-width');
+                img.style.removeProperty('max-height');
+            }
+
+            _setCurrentOptions(e) {
+                const newOptions = this._getCropperOptions();
+                if (Object.keys(this.$.cropper.options).length > 0)
+                    e.preventDefault();
+                if (!this.$.cropper.src) return;
+                this.$.cropper.options = newOptions;
+            }
+
+            _isImgLoaded(img) {
+                if (!img.complete) {
+                    return false;
+                }
+                if (img.naturalWidth === 0) {
+                    return false;
+                }
+                return true;
+            }
+
+            _getAspectRatio() {
+                const gcd = (a, b) => b == 0 ? a : gcd(b, a % b);
+                var w = this.targetElem.offsetWidth;
+                var h = this.targetElem.offsetHeight;
+                var r = gcd(w, h);
+                return (w / r) / (h / r);
+            }
+
+            _getCropperOptions() {
+                let options = {
+                    preview: this.previewElem,
+                    aspectRatio: this._getAspectRatio()
+                };
+                options = Object.assign(options, this._defaultOptions);
+                return Object.assign(options, this._getCropperOptions);
+            }
+
+            _updateOptions() {
+                if (this._isImgLoaded(this.targetElem)) {
+                    this._setPreviewSize();
+                    this.$.cropper.options = this._getCropperOptions();
+                }
+                else {
+                    this.targetElem.addEventListener('load', this._setPreviewSize.bind(this));
+                }
+            }
+
+            _targetChanged() {
+                this.targetElem = (typeof (this.target) === "string") ? document.querySelector(this.target) : this.target;
+                if (!this.targetElem) console.error(`It's required a target element`);
+                this._updateOptions();
+            }
+
+            _previewChanged() {
+                this.previewElem = (typeof (this.preview) === "string") ? document.querySelector(this.preview) : this.preview;
+                if (!this.targetElem) return;
+                this._updateOptions();
+            }
+
+            _setPreviewSize() {
+                if (!this.previewElem) return;
+                this.previewElem.style.height = this.targetElem.offsetHeight;
+                this.previewElem.style.width = this.targetElem.offsetWidth;
+            }
+
+            _uploadFiles(e) {
+                var file = e.detail.files[0];
+                if (!file) return;
+
+                this.$.cropper.classList.remove('hidden');
+                this.$.cropper.src = URL.createObjectURL(file);
+            }
+
+            constructor() {
+                super();
+                this._defaultOptions = {
+                    dragMode: 'none',
+                    viewMode: 2,
+                    zoomable: false,
+                    //minCropBoxHeight: 200,
+                    //minCropBoxWidth: 100
                 };
             }
 
             connectedCallback() {
                 super.connectedCallback();
+                const confirmElem = this.querySelector('[confirm-crop]');
+                if (confirmElem) {
+                    confirmElem.addEventListener('click', e => {
+                        e.preventDefault();
+                        this.targetElem.src = this.getCroppedData();
+                        this.reset();
+                    });
+                }
 
+                const cancelElem = this.querySelector('[cancel-crop]');
+                if (cancelElem) {
+                    cancelElem.addEventListener('click', e => {
+                        e.preventDefault();
+                        this.reset();
+                    })
+                }
             }
 
-            uploadFiles(e) {
-                var file = e.detail.files[0];
-                //this.$.uploader.classList.add('hidden');
-                this.$.cropper.classList.remove('hidden');
-                this.$.cropper.src = URL.createObjectURL(file);
-            }
-
-            _changeImage() {
-                this.$.uploader.click();
-            }
-
-            _cropImage() {
+            reset() {
+                this.$.uploader.reset();
                 this.$.cropper.classList.add('hidden');
-                this.$.image.src = this.$.cropper._cropper.getCroppedCanvas().toDataURL();
-                //this.$.uploader.classList.remove('hidden');
+                this.$.cropper.src = '';
             }
 
-            saveImage() {
-
+            getCroppedData() {
+                return this.$.cropper._cropper.getCroppedCanvas().toDataURL();
             }
         }
 

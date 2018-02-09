@@ -1,6 +1,6 @@
 # \<yo-image\>
 
-A image input with upalod and crop
+A image input with uplaod and crop
 
 ## Install the Polymer-CLI
 

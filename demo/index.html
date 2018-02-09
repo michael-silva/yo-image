@@ -12,6 +12,7 @@
     <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
     <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
     <link rel="import" href="../yo-image.html">
+    <link rel="import" href="../../paper-dialog/paper-dialog.html">
 
     <custom-style>
         <style is="custom-style" include="demo-pages-shared-styles">
@@ -24,7 +25,155 @@
         <h3>Basic yo-image demo</h3>
         <demo-snippet>
             <template>
-                <yo-image></yo-image>
+                <style>
+                    #result1 {
+                        display: block;
+                        width: 250px;
+                        height: 350px;
+                        margin: auto;
+                    }
+                </style>
+                <img id="result1" src="http://via.placeholder.com/250x350">
+                <yo-image target="#result1">
+                    <button confirm-crop>Confirm crop</button>
+                    <button cancel-crop>Cancel</button>
+                </yo-image>
+            </template>
+        </demo-snippet>
+    </div>
+    <div class="vertical-section-container centered">
+        <h3>Preview cropped yo-image demo</h3>
+        <demo-snippet>
+            <template>
+                <style>
+                    .row {
+                        display: flex;
+                    }
+
+                    .col {
+                        display: inline-flex;
+                        width: 50%;
+                    }
+
+                    #result2 {
+                        display: flex;
+                        max-width: 100%;
+                        height: auto;
+                    }
+
+                    #preview2 {
+                        display: flex;
+                        width: 100%;
+                        height: 100%;
+                        overflow: hidden;
+                    }
+                </style>
+                <div class="row">
+                    <div class="col">
+                        <img id="result2" src="http://via.placeholder.com/350x250">
+                    </div>
+                    <div class="col">
+                        <div id="preview2"></div>
+                    </div>
+                </div>
+                <yo-image target="#result2" preview="#preview2"></yo-image>
+            </template>
+        </demo-snippet>
+    </div>
+    <div class="vertical-section-container centered">
+        <h3>Inside modal yo-image demo</h3>
+        <demo-snippet>
+            <template>
+                <style>
+                    #result3 {
+                        display: block;
+                        width: 512px;
+                        height: 320px;
+                        margin: auto;
+                    }
+
+                    .image-container {
+                        display: block;
+                        width: 100%;
+                        cursor: pointer;
+                        position: relative;
+                    }
+
+                    .image-container::before {
+                        content: '';
+                        background-color: var(--paper-indigo-600);
+                    }
+
+                    .image-container::after {
+                        text-align: center;
+                        content: 'Click to open modal';
+                        padding-top: 140px;
+                        font-size: 28px;
+                        color: #fff;
+                    }
+
+                    .image-container::before,
+                    .image-container::after {
+                        display: block;
+                        position: absolute;
+                        top: 100%;
+                        bottom: 0;
+                        right: 0;
+                        left: 0;
+                        opacity: 0;
+                    }
+
+                    .image-container:hover::before {
+                        top: 0;
+                        opacity: .3;
+                        transition: all .4s ease-in-out;
+                    }
+
+                    .image-container:hover::after {
+                        top: 0;
+                        opacity: 1;
+                        transition: all .4s ease-in-out;
+                    }
+
+                    #yo {
+                        display: flex;
+                        flex-direction: column;
+                        min-width: 512px;
+                        min-height: 320px;
+                    }
+                </style>
+                <div class="image-container">
+                    <img id="result3" src="https://placeimg.com/512/320/any">
+                </div>
+                <paper-dialog id="dialog">
+                    <yo-image id="yo" target="#result3"></yo-image>
+                    <div class="buttons">
+                        <button id="confirm">Confirm crop</button>
+                        <button id="cancel">Cancel</button>
+                    </div>
+                </paper-dialog>
+                <script>
+                    const dialog = document.querySelector('#dialog');
+                    const yo = document.querySelector('#yo');
+                    const result = document.querySelector('#result3');
+
+                    document.querySelector('.image-container').addEventListener('click', () => {
+                        dialog.open();
+                    })
+
+                    dialog.querySelector('#cancel')
+                        .addEventListener('click', () => {
+                            dialog.close();
+                            yo.reset();
+                        })
+
+                    dialog.querySelector('#confirm')
+                        .addEventListener('click', () => {
+                            result.src = yo.getCroppedData();
+                            dialog.close();
+                            yo.reset();
+                        });
+                </script>
             </template>
         </demo-snippet>
     </div>
