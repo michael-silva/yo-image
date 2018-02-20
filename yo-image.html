@@ -22,13 +22,16 @@
             }
 
             #cropper.hidden,
-            #uploader.hidden {
+            #uploader.hidden,
+            #slot.hidden ::slotted(*) {
                 display: none;
             }
         </style>
         <yo-paper-cropper id="cropper" class="hidden" on-image-loaded="_setCurrentOptions" on-cropper-ready="_hackToPreview"></yo-paper-cropper>
         <yo-file-uploader id="uploader" on-change="_uploadFiles" hide-droparea></yo-file-uploader>
-        <slot></slot>
+        <div id="slot" class="hidden">
+            <slot></slot>
+        </div>
     </template>
 
     <script>
@@ -146,6 +149,7 @@
                 if (!file) return;
 
                 this.$.cropper.classList.remove('hidden');
+                this.$.slot.classList.remove('hidden');
                 this.$.cropper.src = URL.createObjectURL(file);
             }
 
@@ -183,6 +187,7 @@
             reset() {
                 this.$.uploader.reset();
                 this.$.cropper.classList.add('hidden');
+                this.$.slot.classList.add('hidden');
                 this.$.cropper.src = '';
             }
 
