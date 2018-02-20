@@ -1,6 +1,6 @@
 {
   "name": "yo-image",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A image input with upload and crop",
   "main": "yo-image.html",
   "license": "MIT",
