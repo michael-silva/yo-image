@@ -1,6 +1,6 @@
 {
   "name": "yo-image",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "A image input with upload and crop",
   "main": "yo-image.html",
   "license": "MIT",
@@ -8,7 +8,7 @@
     "polymer": "Polymer/polymer#^2.0.0",
     "iron-image": "^2.1.2",
     "paper-button": "^2.0.0",
-    "yo-file-uploader": "michael-silva/yo-file-uploader#^0.0.3",
+    "yo-file-uploader": "michael-silva/yo-file-uploader#^0.0.4",
     "yo-paper-cropper": "michael-silva/yo-paper-cropper#^0.0.7",
     "paper-dialog": "^2.0.1"
   },

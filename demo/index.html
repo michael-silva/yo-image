@@ -42,6 +42,33 @@
         </demo-snippet>
     </div>
     <div class="vertical-section-container centered">
+        <h3>Customization yo-image demo</h3>
+        <demo-snippet>
+            <template>
+                <style>
+                    #result {
+                        display: block;
+                        width: 250px;
+                        height: 350px;
+                        margin: auto;
+                    }
+                </style>
+                <img id="result" src="http://via.placeholder.com/250x350">
+                <yo-image id="yoimage" target="#result" maxsize="1024" uploader-label="This has a custom uplaoder label">
+                    <button confirm-crop>Confirm crop</button>
+                    <button cancel-crop>Cancel</button>
+                </yo-image>
+                <script>
+                    window.addEventListener('load', e => {
+                        const yoImage = document.querySelector('#yoimage');
+                        yoImage.setFeedback('single', 'This is a custom feedback for dropping multiple files');
+                        yoImage.setFeedback('tooLarge', 'This is a custom feedback for too large files');
+                    })
+                </script>
+            </template>
+        </demo-snippet>
+    </div>
+    <div class="vertical-section-container centered">
         <h3>Preview cropped yo-image demo</h3>
         <demo-snippet>
             <template>

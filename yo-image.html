@@ -28,7 +28,7 @@
             }
         </style>
         <yo-paper-cropper id="cropper" class="hidden" on-image-loaded="_setCurrentOptions" on-cropper-ready="_hackToPreview"></yo-paper-cropper>
-        <yo-file-uploader id="uploader" on-change="_uploadFiles" hide-droparea></yo-file-uploader>
+        <yo-file-uploader id="uploader" maxsize$="[[maxsize]]" on-change="_uploadFiles" hide-droparea></yo-file-uploader>
         <div id="slot" class="hidden">
             <slot></slot>
         </div>
@@ -62,11 +62,20 @@
                         type: Element | String,
                         observer: '_previewChanged'
                     },
+                    maxsize: {
+                        type: Number,
+                        value: 5120
+                    },
                     cropperOptions: {
                         type: Object,
                         value: {}
                     }
                 };
+            }
+
+            _uploaderLabelChanged(newLabel, oldLabel) {
+                if (!oldLabel && !newLabel) return;
+                this.$.uploader.label = this.uploaderLabel;
             }
 
             /**
@@ -189,6 +198,10 @@
                 this.$.cropper.classList.add('hidden');
                 this.$.slot.classList.add('hidden');
                 this.$.cropper.src = '';
+            }
+
+            setFeedback(name, message) {
+                return this.$.uploader.setFeedback(name, message);
             }
 
             getCroppedData() {
